@@ -47,23 +47,26 @@ app.use(session({
     saveUninitialized: false,
     store: sessionStore,
     cookie: {
-        secure: process.env.NODE_ENV === 'production',
+        secure: true,
         httpOnly: true,
-        maxAge: 30 * 24 * 60 * 60 * 1000,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
         sameSite: 'none',
     }
 }));
 
-const origins = process.env.ALLOWED_ORIGINS.split(',');
+const origins = process.env.ALLOWED_ORIGINS;
 
-app.use(deserializeUser);
+app.use(deserializeUser)
 app.use(cors({
-    origin: origins,
-    credentials: true
+    origin: (origin, callback) => {
+        if (origins.includes(origin) || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
 }));
-
-// app.use(cors({}))
-
 app.set('trust proxy', true);
 aiRoutes(app);
 scanRoutes(app);
