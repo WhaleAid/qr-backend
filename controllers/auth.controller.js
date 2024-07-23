@@ -27,8 +27,8 @@ exports.login = async (req, res) => {
         const accessToken = SignJWT({ sessionId: req.session.id, email: email, role: user.role, id: user._id }, '30d');
         const refreshToken = SignJWT({ sessionId: req.session.id }, '1y');
 
-        res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: 2592000000, sameSite: 'Lax' });
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 31536000000, sameSite: 'none' });
+        res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: 2592000000, sameSite: 'none', secure: true });
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 31536000000, sameSite: 'none', secure: true });
 
         res.status(200).json({
             accessToken,
