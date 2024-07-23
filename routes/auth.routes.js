@@ -3,7 +3,8 @@ const { requireUser } = require("../middlewares/requireUser.js");
 module.exports = app => {
     const auth = require("../controllers/auth.controller.js");
 
-    app.post('/login', auth.login);
-    app.post("/register", auth.register);
-    app.post("/logout", requireUser, auth.logout);
+    app.post('/auth/login', auth.login);
+    app.post('/auth/register', auth.register);
+    app.post('/auth/logout', auth.logout);
+    app.post('/auth/validate-token', auth.validateToken);
 }

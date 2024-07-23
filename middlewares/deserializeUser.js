@@ -1,6 +1,4 @@
-const jwt = require('jsonwebtoken');
 const { VerifyJWT, SignJWT } = require('../utils/jwt.utils');
-const { getSession } = require('../services');
 
 exports.deserializeUser = (req, res, next) => {
     const { accessToken, refreshToken } = req.cookies;
@@ -22,16 +20,16 @@ exports.deserializeUser = (req, res, next) => {
         return next();
     }
 
-    const session = req.sessionStore.get(refresh.sessionId, (error, session) => {
+    req.sessionStore.get(refresh.sessionId, (error, session) => {
         if (error || !session) {
             return next();
         }
 
-        const newAccessToken = SignJWT(session.user, '5s');
+        const newAccessToken = SignJWT(session.user, '30d');
 
         res.cookie('accessToken', newAccessToken, {
             httpOnly: true,
-            maxAge: 30000000,
+            maxAge: 2592000000, 
         });
 
         req.user = VerifyJWT(newAccessToken).payload;

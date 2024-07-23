@@ -2,12 +2,14 @@ const mongoose = require('mongoose');
 
 const generationSchema = new mongoose.Schema({
     text: String,
-    panelId: String,
     valid: Boolean,
-    image: String,
     isModerated: {
         type: Boolean,
         default: false
+    },
+    campaign: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Campaign'
     }
 },
     {

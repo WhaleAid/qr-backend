@@ -5,6 +5,11 @@ const scanSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Generation'
     },
+    image: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Image'
+    },
+    panelId: String,
     city: String,
 },
     {

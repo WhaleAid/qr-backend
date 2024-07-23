@@ -8,14 +8,14 @@ exports.scan = async (req, res) => {
     const { redirectUrl } = req.query;
 
     if (!generationId) {
-        return res.status(400).send("No generation ID was provided");
+        return res.status(400).json("ID de génération manquant");
     }
 
     try {
         const generation = await Generation.findById(generationId);
 
         if (!generation) {
-            return res.status(404).send("Generation not found");
+            return res.status(404).json("Génération non trouvée");
         }
 
         let clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -31,7 +31,7 @@ exports.scan = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error handling scan:", error);
-        res.status(500).send("Error adding scan");
+        console.log("🚀 ~ exports.scan ~ error:", error);
+        res.status(500).json("Erreur lors de la création du scan");
     }
 };
