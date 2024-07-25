@@ -1,5 +1,5 @@
 module.exports = (io) => {
-    io.on('connection', (socket) => {
+    io.on('connect', (socket) => {
         console.log('User connected', socket.id);
 
         socket.on('disconnect', (reason) => {

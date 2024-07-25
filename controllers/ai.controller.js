@@ -4,34 +4,30 @@ const axios = require('axios');
 
 exports.generateCompletion = async (req, res) => {
 
-    // const openAI = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    // const { campaignId } = req.params;
-    // const { prompt } = req.body;
+    const openAI = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const { campaignId } = req.params;
+    const { prompt } = req.body;
 
     try {
-        // const completion = await openAI.chat.completions.create({
-        //     model: "gpt-3.5-turbo",
-        //     messages: [
-        //         {
-        //             role: "system",
-        //             content: "Vous êtes simplement un générateur de slogans, on vous dira de quel produit parler et vous générerez un tableau de 10 slogans simple mais accrocheur en 1 ou 2 phrases```Les phrases que vous génériez doivent être en français.``` il faut suivre le prompt donné et ne pas dévier de la demande. ```la réponse doit être sous format d'un tableau avec les slogans générés``` ```Voici le format de la réponse attendue : [\"slogan1\", \"slogan2\", \"slogan3\"] ainsi de suite.```"
+        const completion = await openAI.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                {
+                    role: "system",
+                    content: "Vous êtes simplement un générateur de slogans, on vous dira de quel produit parler et vous générerez un tableau de 10 slogans simple mais accrocheur en 1 ou 2 phrases```Les phrases que vous génériez doivent être en français.``` il faut suivre le prompt donné et ne pas dévier de la demande. ```la réponse doit être sous format d'un tableau json avec les slogans générés``` ```Voici le format de la réponse attendue : [\"slogan1\", \"slogan2\", \"slogan3\"] ainsi de suite.``` ```ne rajoute strictment rien à la réponse à part le tableau JS, je dois être capable de parser la réponse directement```"
+                },
+                {
+                    role: "user",
+                    content: prompt
+                }
+            ]
+        });
+        let phrases = JSON.parse(completion.choices[0].message.content);
 
-        //         },
-        //         {
-        //             role: "user",
-        //             content: prompt
-        //         }
-        //     ]
-        // });
-        // let phrases = JSON.parse(completion.choices[0].message.content);
-        // console.log("🚀 ~ exports.generateCompletion ~ phrases:", phrases)
-
-        // phrases.map(async (phrase) => {
-        //     await Generation.create({ text: phrase, campaign: campaignId })
-        // })
-        const completion = await Generation.findOne({ text: "this is a generation text for testing"})
+        phrases.map(async (phrase) => {
+            await Generation.create({ text: phrase, campaign: campaignId })
+        })
         res.status(200).json(completion.text);
-        // res.status(200).json("Hello World");
     } catch (error) {
         console.log("🚀 ~ exports.generateCompletion ~ error:", error)
         res.status(500).json({ error: "Erreur lors de la création de votre contenu" })
@@ -72,7 +68,7 @@ exports.generateColors = async (req, res) => {
 
         // generation.colors = JSON.parse(completion.choices[0].message.content);
         // generation.save();
-        
+
         res.status(200).json(completion.choices[0].message.content);
 
     } catch (error) {
@@ -86,10 +82,10 @@ exports.generateImages = async (req, res) => {
 
     const midjourneyRequest = await axios.post('https://api.userapi.ai/midjourney/v2/imagine', {
         "prompt": prompt,
-        "webhook_url": "https://9a66-176-136-145-129.ngrok-free.app/webhook/midjourney",
+        "webhook_url": `${process.env.BACKEND_URL}/webhook/midjourney`,
         "webhook_type": "progress",
         "account_hash": process.env.DISCORD_ACCOUNT_HASH,
-        "is_disable_prefilter": false
+        "is_disable_prefilter": false,
     }, {
         headers: {
             "api-key": process.env.USERAPI_API_KEY

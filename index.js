@@ -38,6 +38,7 @@ try {
     console.log('MongoDB Client Error', error);
 }
 
+// app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
@@ -47,25 +48,19 @@ app.use(session({
     saveUninitialized: false,
     store: sessionStore,
     cookie: {
-        secure: true,
+        secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7,
+        maxAge: 30 * 24 * 60 * 60 * 1000,
         sameSite: 'none',
     }
 }));
 
-const origins = process.env.ALLOWED_ORIGINS;
+const origins = process.env.ALLOWED_ORIGINS.split(',').map(origin=>origin);
 
-app.use(deserializeUser)
+app.use(deserializeUser);
 app.use(cors({
-    origin: (origin, callback) => {
-        if (origins.includes(origin) || !origin) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true,
+    origin: origins,
+    credentials: true
 }));
 app.set('trust proxy', true);
 aiRoutes(app);
@@ -82,7 +77,7 @@ app.get('/', (req, res) => {
 });
 
 const server = app.listen(PORT, () => {
-    console.log(`Server running on ${process.env.BACKEND_URL}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });
 
 const io = require('socket.io')(server, {
