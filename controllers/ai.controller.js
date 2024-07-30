@@ -14,8 +14,8 @@ exports.generateCompletion = async (req, res) => {
             messages: [
                 {
                     role: "system",
-                    content: "Vous êtes simplement un générateur de slogans, on vous dira de quel produit parler et vous générerez un tableau de 10 slogans simple mais accrocheur en 1 ou 2 phrases```Les phrases que vous génériez doivent être en français.``` il faut suivre le prompt donné et ne pas dévier de la demande. ```la réponse doit être sous format d'un tableau json avec les slogans générés``` ```Voici le format de la réponse attendue : [\"slogan1\", \"slogan2\", \"slogan3\"] ainsi de suite.``` ```ne rajoute strictment rien à la réponse à part le tableau JS, je dois être capable de parser la réponse directement```"
-                },
+                    content: "Nous lançons des campagnes publicitaires DOOH sur nos écrans. Nous avons besoin d'avoir un record de scan QR Code pour le client. Vous êtes un growth hacker et copywriter, et vous êtes capable de créer des phrases d'accroches qu'on appelle Call To Action qui permettent de fortement pousser les gens à l'action, c'est-à-dire que les passants scannent le QR Code présent dans nos écrans publicitaires Turnadon. Vous générez un tableau de 10 phrases courtes et accrocheuses en 1 ou 2 phrases. Les phrases que vous générez doivent être en français. La réponse doit être sous format d'un tableau avec les slogans générés. Voici le format de la réponse attendue : [\"slogan1\", \"slogan2\", \"slogan3\"] ainsi de suite. Ne rajoutez strictement rien à la réponse à part le tableau JS, je dois être capable de parser la réponse directement."
+                },                
                 {
                     role: "user",
                     content: prompt
