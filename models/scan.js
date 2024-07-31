@@ -11,6 +11,10 @@ const scanSchema = new mongoose.Schema({
     },
     panelId: String,
     city: String,
+    count: {
+        type: Number,
+        default: 1
+    }
 },
     {
         timestamps: true

@@ -4,7 +4,7 @@ const { IPinfoWrapper } = require('node-ipinfo');
 const ipinfo = new IPinfoWrapper(process.env.IPINFO_API_TOKEN);
 
 exports.scan = async (req, res) => {
-    const { generationId } = req.params;
+    const { generationId, imageId } = req.params;
     const { redirectUrl } = req.query;
 
     if (!generationId) {
@@ -13,23 +13,23 @@ exports.scan = async (req, res) => {
 
     try {
         const generation = await Generation.findById(generationId);
+        const image = await Image.findById(imageId);
 
-        if (!generation) {
-            return res.status(404).json("Génération non trouvée");
+        if (!generation || !image) {
+            return res.status(404).json("Contenu non trouvée");
         }
-
-        let clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        clientIp = clientIp
-        ipinfo.lookupIp(clientIp).then(async (response) => {
+        const previousScan = await Scan.findOne({ generation: generationId, image: imageId });
+        if (!previousScan) {
             await Scan.create({
                 generation: generationId,
+                image: imageId,
                 city: response.city,
             });
-            res.redirect(redirectUrl ?? process.env.DEFAULT_REDIRECT_URL);
-        }).catch((error) => {
-            console.log("error: ", error);
-        });
-
+        } else {
+            previousScan.count++;
+            await previousScan.save();
+        }
+        res.redirect(redirectUrl ?? process.env.DEFAULT_REDIRECT_URL);
     } catch (error) {
         console.log("🚀 ~ exports.scan ~ error:", error);
         res.status(500).json("Erreur lors de la création du scan");

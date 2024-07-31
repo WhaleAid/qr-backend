@@ -3,10 +3,9 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const socketHandler = require('./sockets');
 const { initSocket } = require('./sockets/socketEvents');
-const MongoStore = require('connect-mongo');
-
 const aiRoutes = require('./routes/ai.routes');
 const scanRoutes = require('./routes/scan.routes');
 const authRoutes = require('./routes/auth.routes');
@@ -80,9 +79,17 @@ const io = new Server(server, {
         origin: origins,
         methods: ["GET", "POST"],
         credentials: true,
-        path: '/socket.io'
+        path: '/socket.io' // Ensure this matches the client-side configuration
     }
 });
+
+io.on('connection', (socket) => {
+    console.log('New client connected');
+    socket.on('disconnect', () => {
+        console.log('Client disconnected');
+    });
+});
+
 socketHandler(io);
 initSocket(io);
 
