@@ -1,4 +1,4 @@
-const { Scan, Generation } = require("../models");
+const { Scan, Generation, Image } = require("../models");
 const mongoose = require('mongoose');
 const { IPinfoWrapper } = require('node-ipinfo');
 
