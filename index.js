@@ -3,9 +3,9 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-const jwt = require('express-jwt');
 const socketHandler = require('./sockets');
 const { initSocket } = require('./sockets/socketEvents');
+const MongoStore = require('connect-mongo');
 
 const aiRoutes = require('./routes/ai.routes');
 const scanRoutes = require('./routes/scan.routes');
@@ -16,27 +16,24 @@ const generationRoutes = require('./routes/generation.routes');
 const imageRoutes = require('./routes/image.routes');
 const webhookRoutes = require('./routes/webhook.routes');
 const http = require('http');
-
+const { Server } = require("socket.io");
 const mongoose = require('mongoose');
 const { deserializeUser } = require('./middlewares/deserializeUser');
-const MongoStore = require('connect-mongo');
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const mongoDB = process.env.MONGODB_URI;
+
 const sessionStore = MongoStore.create({
     mongoUrl: mongoDB,
     autoRemove: 'native'
 });
 
-try {
-    mongoose.connect(mongoDB);
-    console.log('MongoDB Client Connected');
-} catch (error) {
-    console.log('MongoDB Client Error', error);
-}
+mongoose.connect(mongoDB)
+    .then(() => console.log('MongoDB Client Connected'))
+    .catch(error => console.log('MongoDB Client Error', error));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -50,8 +47,7 @@ app.use(session({
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
         maxAge: 30 * 24 * 60 * 60 * 1000,
-        sameSite: 'none',
-        secure: true
+        sameSite: 'none'
     }
 }));
 
@@ -63,7 +59,7 @@ app.use(cors({
     credentials: true
 }));
 app.set('trust proxy', true);
-// app.use(cors());
+
 aiRoutes(app);
 scanRoutes(app);
 authRoutes(app);
@@ -79,16 +75,19 @@ app.get('/', (req, res) => {
 
 const server = http.createServer(app);
 
-server.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
-
-const io = require('socket.io')(server, {
+const io = new Server(server, {
     cors: {
-        origin: "*",
+        origin: origins,
+        methods: ["GET", "POST"],
+        credentials: true,
+        path: '/socket.io'
     }
 });
 socketHandler(io);
 initSocket(io);
+
+server.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});
 
 module.exports = app;
