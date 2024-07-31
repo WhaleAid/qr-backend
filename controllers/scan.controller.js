@@ -22,7 +22,6 @@ exports.scan = async (req, res) => {
             await Scan.create({
                 generation: generationId,
                 image: imageId,
-                city: response.city,
             });
         } else {
             previousScan.count++;
