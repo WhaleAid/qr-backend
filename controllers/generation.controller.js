@@ -309,7 +309,7 @@ exports.getRandomGenerationAndImageByCampaign = async (req, res) => {
         const generationId = generation?._id;
         const imageId = image?._id;
 
-        res.status(200).json({ generationId:generationId, imageId:imageId, text: generation?.text, image: image?.image });
+        res.status(200).json({ generationid:generationId, imageid:imageId, text: generation?.text, image: image?.image });
     } catch (error) {
         console.log(error);
         res.status(500).json("Erreur lors de la récupération de la génération");
