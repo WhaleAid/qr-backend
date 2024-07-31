@@ -53,10 +53,17 @@ app.use(session({
 const origins = process.env.ALLOWED_ORIGINS.split(',').map(origin => origin);
 
 app.use(deserializeUser);
-app.use(cors({
-    origin: origins,
-    credentials: true
-}));
+app.use((req, res, next) => {
+    if (origins.indexOf(req.headers.origin) !== -1 || !req.headers.origin) {
+        res.header('Access-Control-Allow-Origin', req.headers.origin);
+        res.header('Access-Control-Allow-Credentials', true);
+    }
+    next();
+});
+// app.use(cors({
+//     origin: origins,
+//     credentials: true
+// }));
 app.set('trust proxy', true);
 
 aiRoutes(app);
