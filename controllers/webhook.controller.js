@@ -6,7 +6,7 @@ const { emitSocket } = require('../sockets/socketEvents');
 
 //! This is the call that the midjourney will make
 exports.midjourneyWebhook = async (req, res, next) => {
-    console.log(req.headers)
+    console.log(req)
     console.log('Midjourney webhook called')
     const { status, result, progress, hash, status_reason, created_at } = req.body;
 

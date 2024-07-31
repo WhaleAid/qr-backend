@@ -79,7 +79,7 @@ const io = new Server(server, {
         origin: origins,
         methods: ["GET", "POST"],
         credentials: true,
-        path: '/socket.io' // Ensure this matches the client-side configuration
+        path: '/socket.io'
     }
 });
 
