@@ -1,4 +1,3 @@
-// index.js
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
@@ -16,6 +15,7 @@ const campaignRoutes = require('./routes/campaign.routes');
 const generationRoutes = require('./routes/generation.routes');
 const imageRoutes = require('./routes/image.routes');
 const webhookRoutes = require('./routes/webhook.routes');
+const http = require('http');
 
 const mongoose = require('mongoose');
 const { deserializeUser } = require('./middlewares/deserializeUser');
@@ -38,7 +38,6 @@ try {
     console.log('MongoDB Client Error', error);
 }
 
-// app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
@@ -56,7 +55,7 @@ app.use(session({
     }
 }));
 
-const origins = process.env.ALLOWED_ORIGINS.split(',').map(origin=>origin);
+const origins = process.env.ALLOWED_ORIGINS.split(',').map(origin => origin);
 
 app.use(deserializeUser);
 app.use(cors({
@@ -64,6 +63,7 @@ app.use(cors({
     credentials: true
 }));
 app.set('trust proxy', true);
+// app.use(cors());
 aiRoutes(app);
 scanRoutes(app);
 authRoutes(app);
@@ -77,14 +77,15 @@ app.get('/', (req, res) => {
     res.json({ message: 'Welcome to turnadon API' });
 });
 
-const server = app.listen(PORT, () => {
+const server = http.createServer(app);
+
+server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
 
 const io = require('socket.io')(server, {
     cors: {
         origin: origins,
-        methods: ['GET', 'POST'],
         credentials: true
     }
 });

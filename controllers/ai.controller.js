@@ -82,7 +82,7 @@ exports.generateImages = async (req, res) => {
 
     const midjourneyRequest = await axios.post('https://api.userapi.ai/midjourney/v2/imagine', {
         "prompt": prompt,
-        "webhook_url": `${process.env.BACKEND_URL}/webhook/midjourney`,
+        "webhook_url": `${process.env.BACKEND_URL}webhook/midjourney`,
         "webhook_type": "progress",
         "account_hash": process.env.DISCORD_ACCOUNT_HASH,
         "is_disable_prefilter": false,
