@@ -38,12 +38,54 @@ exports.getScansByCampaign = async (req, res) => {
     const { campaignId } = req.params;
 
     try {
-        const scans = await Scan.find({
-            $and: [
-                { 'generation.campaign': new mongoose.Types.ObjectId(campaignId) },
-                { 'image.campaign': new mongoose.Types.ObjectId(campaignId) },
-            ]
-        }).populate('generation').populate('image');
+        const pipeline = [
+            {
+                $lookup: {
+                    from: "generations",
+                    localField: "generation",
+                    foreignField: "_id",
+                    as: "generation"
+                }
+            },
+            {
+                $lookup: {
+                    from: "images",
+                    localField: "image",
+                    foreignField: "_id",
+                    as: "image"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$generation",
+                    preserveNullAndEmptyArrays: false
+                }
+            },
+            {
+                $unwind: {
+                    path: "$image",
+                    preserveNullAndEmptyArrays: false
+                }
+            },
+            {
+                $addFields: {
+                    campaign: {
+                        $toObjectId: "$generation.campaign"
+                    }
+                }
+            },
+            {
+                $match: {
+                    campaign: new mongoose.Types.ObjectId(campaignId)
+                }
+            },
+            {
+                $sort: {
+                    count: -1
+                }
+            }
+        ]
+        const scans = await Scan.aggregate(pipeline);
         if (!scans) {
             return res.status(404).json("Scans non trouvés");
         }
