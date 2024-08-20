@@ -55,6 +55,7 @@ exports.midjourneyWebhook = async (req, res, next) => {
 }
 
 exports.triggerWebhook = async (req, res, next) => {
-    const response = await axios.post('https://webhook-test.com/534bd77e6cb949f5b12fde887bf23289', req.body);
+    console.log('Webhook triggered')
+    const response = await axios.post('https://webhook-test.com/72a62896319f3f5b9cfbf41afe5bbacf', req.body);
     res.status(200).json();
 }

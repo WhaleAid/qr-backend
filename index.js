@@ -66,6 +66,11 @@ app.use(cors({
 }));
 app.set('trust proxy', true);
 
+app.use('/webhook/midjourney', cors({
+    origin: '*',
+    credentials: true
+}));
+
 aiRoutes(app);
 scanRoutes(app);
 authRoutes(app);
