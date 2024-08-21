@@ -50,26 +50,28 @@ app.use(session({
     }
 }));
 
-const origins = process.env.ALLOWED_ORIGINS.split(',').map(origin => origin);
-
 app.use(deserializeUser);
-/* app.use((req, res, next) => {
-    if (origins.indexOf(req.headers.origin) !== -1 || !req.headers.origin) {
-        res.header('Access-Control-Allow-Origin', req.headers.origin);
-        res.header('Access-Control-Allow-Credentials', true);
-    }
-    next();
-}); */
+
+const origins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [];
+
 app.use(cors({
-     origin: origins,
-     credentials: true
+    origin: (origin, callback) => {
+        if (!origin || origins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
 }));
+
 app.set('trust proxy', true);
 
 app.use('/webhook/midjourney', cors({
     origin: '*',
-    credentials: true
+    credentials: false
 }));
+
 
 aiRoutes(app);
 scanRoutes(app);
