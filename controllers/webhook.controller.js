@@ -10,6 +10,10 @@ exports.midjourneyWebhook = async (req, res, next) => {
     console.log('Midjourney webhook called')
     const { status, result, progress, hash, status_reason, created_at } = req.body;
 
+    if (!hash || !status || !progress || !status_reason || !created_at) {
+        return res.status(400).json("Bad request")
+    }
+    
     try {
         const images = await Image.find({ hash: hash })
         if (!images) {
