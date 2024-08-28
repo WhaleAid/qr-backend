@@ -56,7 +56,7 @@ const origins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(
 
 app.use(cors({
     origin: '*',
-    credentials: false
+    credentials: true
 }));
 
 // app.use('/webhook/midjourney', cors({
