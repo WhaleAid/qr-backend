@@ -1,27 +1,6 @@
 const mongoose = require('mongoose');
 const { Generation, Campaign, Image } = require('../models');
 
-// exports.create = async (req, res) => {
-//     const { text, image, campaign } = req.body;
-
-//     try {
-//         if ((!text && !image) || !campaign) {
-//             return res.status(400).json("Informations manquantes");
-//         }
-
-//         const existingCampaign = await Campaign.findById(campaign);
-//         if (!existingCampaign) {
-//             return res.status(404).json("Campagne non trouvée");
-//         }
-
-//         const createdGeneration = await Generation.create({ text, image, campaign });
-//         res.status(201).json(createdGeneration);
-//     } catch (error) {
-//         console.error("Error creating generation:", error);
-//         res.status(500).json("Error creating generation");
-//     }
-// }
-
 exports.moderateGeneration = async (req, res) => {
     const { generationId } = req.params;
     const { approved } = req.body;
