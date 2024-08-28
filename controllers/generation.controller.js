@@ -289,6 +289,7 @@ exports.getRandomGenerationAndImageByCampaign = async (req, res) => {
                 $match: {
                     campaign: new mongoose.Types.ObjectId(campaignId),
                     text: { $exists: true },
+                    // TODO: Add check for moderation and validation
                 }
             },
             { $sample: { size: 1 } }
@@ -299,6 +300,7 @@ exports.getRandomGenerationAndImageByCampaign = async (req, res) => {
                 $match: {
                     campaign: new mongoose.Types.ObjectId(campaignId),
                     image: { $exists: true },
+                    // TODO: Add check for moderation and validation
                 }
             },
             { $sample: { size: 1 } }
