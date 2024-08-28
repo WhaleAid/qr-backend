@@ -54,6 +54,10 @@ app.use(deserializeUser);
 
 const origins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [];
 
+app.use('/webhook/midjourney', cors({
+    origin: '*',
+    credentials: false
+}));
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin || origins.includes(origin)) {
@@ -66,12 +70,6 @@ app.use(cors({
 }));
 
 app.set('trust proxy', true);
-
-app.use('/webhook/midjourney', cors({
-    origin: '*',
-    credentials: false
-}));
-
 
 aiRoutes(app);
 scanRoutes(app);
