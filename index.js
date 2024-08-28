@@ -53,27 +53,7 @@ app.use(session({
 app.use(deserializeUser);
 
 const origins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [];
-
-app.use(cors((req, callback) => {
-    const origin = req.header('Origin');
-    let corsOptions;
-
-    if (origins.includes(origin)) {
-        corsOptions = {
-            origin: true,
-            credentials: true
-        }
-    } else {
-        corsOptions = {
-            origin: true,
-            credentials: false
-        }
-    }
-
-    callback(null, corsOptions);
-}));
-
-
+app.use(cors());
 app.set('trust proxy', true);
 
 aiRoutes(app);

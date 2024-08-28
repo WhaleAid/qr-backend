@@ -1,39 +1,28 @@
 const { VerifyJWT, SignJWT } = require('../utils/jwt.utils');
 
 exports.deserializeUser = (req, res, next) => {
-    const { accessToken, refreshToken } = req.cookies;
+    const authHeader = req.headers.authorization;
 
-    if (!accessToken && !refreshToken) {
+    if (!authHeader) {
         return next();
     }
 
-    const { payload, expired } = VerifyJWT(accessToken);
+    const token = authHeader.split(' ')[1];
+
+    if (!token) {
+        return next();
+    }
+
+    const { payload, expired } = VerifyJWT(token);
 
     if (payload) {
         req.user = payload;
         return next();
     }
 
-    const { payload: refresh } = expired && refreshToken ? VerifyJWT(refreshToken) : { payload: null };
-
-    if (!refresh || !refresh.sessionId) {
+    if (expired) {
         return next();
     }
 
-    req.sessionStore.get(refresh.sessionId, (error, session) => {
-        if (error || !session) {
-            return next();
-        }
-
-        const newAccessToken = SignJWT(session.user, '30d');
-
-        res.cookie('accessToken', newAccessToken, {
-            httpOnly: true,
-            maxAge: 2592000000, 
-        });
-
-        req.user = VerifyJWT(newAccessToken).payload;
-
-        return next();
-    });
-}
+    return next();
+};
