@@ -91,6 +91,7 @@ exports.generateImages = async (req, res) => {
             "api-key": process.env.USERAPI_API_KEY
         }
     })
+    console.log("🚀 ~ exports.generateImages= ~ `${process.env.BACKEND_URL}webhook/midjourney`:", `${process.env.BACKEND_URL}webhook/midjourney`)
 
     for (let i = 0; i < 4; i++) {
         await Image.create({ campaign: campaignId, hash: midjourneyRequest.data.hash })
