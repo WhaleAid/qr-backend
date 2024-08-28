@@ -62,12 +62,12 @@ app.use(cors((req, callback) => {
         corsOptions = {
             origin: true,
             credentials: true
-        };
+        }
     } else {
         corsOptions = {
             origin: true,
             credentials: false
-        };
+        }
     }
 
     callback(null, corsOptions);
