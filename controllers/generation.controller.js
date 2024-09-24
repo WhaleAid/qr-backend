@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { Generation, Campaign, Image } = require('../models');
+// const { sendRegisterEmail } = require('../utils/email.utils');
 
 exports.moderateGeneration = async (req, res) => {
     const { generationId } = req.params;
@@ -11,7 +12,10 @@ exports.moderateGeneration = async (req, res) => {
         if (!generation) {
             return res.status(404).json("Content not found");
         }
-
+        // await sendRegisterEmail({
+        //     email: 'khalqallahwalid@gmail.com',
+        //     hash: 'hash'
+        // })
         generation.isModerated = approved;
         await generation.save();
         res.status(200).json("Géneration modérée");
@@ -268,6 +272,8 @@ exports.getRandomGenerationAndImageByCampaign = async (req, res) => {
                 $match: {
                     campaign: new mongoose.Types.ObjectId(campaignId),
                     text: { $exists: true },
+                    isModerated: true,
+                    valid: true
                     // TODO: Add check for moderation and validation
                 }
             },
@@ -279,6 +285,8 @@ exports.getRandomGenerationAndImageByCampaign = async (req, res) => {
                 $match: {
                     campaign: new mongoose.Types.ObjectId(campaignId),
                     image: { $exists: true },
+                    isModerated: true,
+                    valid: true
                     // TODO: Add check for moderation and validation
                 }
             },
