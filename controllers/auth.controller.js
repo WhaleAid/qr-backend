@@ -13,7 +13,7 @@ exports.login = async (req, res) => {
     }
 
     try {
-        const user = await User.findOne({ email: email });
+        const user = await User.findOne({ email: email }).select("password -token -role -active");
         if (!user) {
             return res.status(404).json("Email ou mot de passe incorrect");
         }
@@ -23,12 +23,11 @@ exports.login = async (req, res) => {
             return res.status(404).json("Email ou mot de passe incorrect");
         }
 
-        const session = createSession(user.email);  // Create a session if you're still using server-side sessions (optional)
+        const session = createSession(user.email);
 
         const accessToken = SignJWT({ sessionId: session.sessionId, email: user.email, role: user.role, id: user._id }, '30d');
         const refreshToken = SignJWT({ sessionId: session.sessionId }, '1y');
 
-        // Instead of setting cookies, return the tokens in the response body
         res.status(200).json({
             accessToken,
             refreshToken,
