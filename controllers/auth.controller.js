@@ -13,7 +13,7 @@ exports.login = async (req, res) => {
     }
 
     try {
-        const user = await User.findOne({ email: email }).select("password -token -role -active");
+        const user = await User.findOne({ email: email })
         if (!user) {
             return res.status(404).json("Email ou mot de passe incorrect");
         }
