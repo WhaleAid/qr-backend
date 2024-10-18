@@ -3,7 +3,7 @@ const { sendEmail } = require("../utils/email.utils")
 
 exports.getMe = async (req, res) => {
     try {
-        const user = await User.findOne({ email: req.user.email, _id: req.user.id }).select("password -token -role -active");
+        const user = await User.findOne({ email: req.user.email, _id: req.user.id }).select("-password -role -active");
         if (!user) {
             return res.status(404).json("Utilisateur introuvable");
         }
