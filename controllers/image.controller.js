@@ -150,22 +150,26 @@ exports.getAllModeratedByCampaign = async (req, res) => {
 
 exports.getMyImageHistory = async (req, res) => {
     const { id } = req.user;
+    console.log("🚀 ~ exports.getMyImageHistory= ~ id:", id)
     try {
         const images = await Image.find({
             valid: {
                 $in: [true, false]
             }
-        })
-            .populate({
-                path: 'campaign',
-                populate: { path: 'owner' }
-            })
-            .sort({ createdAt: -1 });
+        }).populate({
+            path: 'campaign'
+        }).sort({ createdAt: -1 });
+        console.log("🚀 ~ exports.getMyImageHistory= ~ images:", images)
 
         if (!images) {
             return res.status(404).json("Contenu non trouvées");
         }
-        const filteredImages = images.filter(image => image.campaign.owner._id == id)
+        const filteredImages = images.filter((image) =>
+            image.campaign && image.campaign.owner &&
+            image.campaign.owner.equals(id)
+        );
+        console.log("🚀 ~ exports.getMyImageHistory= ~ filteredImages:", filteredImages)
+
         res.status(200).json(filteredImages);
 
     } catch (error) {

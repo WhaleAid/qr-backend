@@ -124,8 +124,6 @@ exports.getMyGenerations = async (req, res) => {
             return res.status(404).json("Générations non trouvées");
         }
         const filteredGenerations = generations.filter(generation => generation.campaign.owner._id == id)
-        console.log("🚀 ~ exports.getMyGenerations= ~ filteredGenerations:", filteredGenerations)
-
         res.status(200).json(filteredGenerations);
     } catch (error) {
         console.log(error);
@@ -140,18 +138,16 @@ exports.getMyGenerationHistory = async (req, res) => {
             valid: {
                 $in: [true, false]
             }
-        })
-            .populate({
-                path: 'campaign',
-                populate: { path: 'owner' }
-            })
-            .sort({ createdAt: -1 });
-
+        }).populate({
+            path: 'campaign'
+        }).sort({ createdAt: -1 });
         if (!generations) {
             return res.status(404).json("Contenu non trouvées");
         }
-        const filteredGenerations = generations.filter(generation => generation.campaign.owner._id == id)
-
+        const filteredGenerations = generations.filter((generation) =>
+            generation.campaign && generation.campaign.owner &&
+            generation.campaign.owner.equals(id)
+        );
         res.status(200).json(filteredGenerations);
     } catch (error) {
         console.log(error);
@@ -298,7 +294,7 @@ exports.getRandomGenerationAndImageByCampaign = async (req, res) => {
         const generationId = generation?._id;
         const imageId = image?._id;
 
-        res.status(200).json({ generationid:generationId, imageid:imageId, text: generation?.text, image: image?.image });
+        res.status(200).json({ generationid: generationId, imageid: imageId, text: generation?.text, image: image?.image });
     } catch (error) {
         console.log(error);
         res.status(500).json("Erreur lors de la récupération de la génération");
